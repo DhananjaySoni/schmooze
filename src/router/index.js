@@ -29,6 +29,11 @@ const routes = [
     name: 'Chatroom',
     component: () => import(/* webpackChunkName: "chatroom" */ '../views/Chatroom.vue')
   },
+  {
+    path: '/chatscreen',
+    name: 'Chatscreen',
+    component: () => import(/* webpackChunkName: "chatscreen" */ '../views/Chatscreen.vue')
+  },
 ]
 
 const router = new VueRouter({

@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     onSubmit() {
-      this.$router.push("/dashboard");
+      this.$router.push("/chatscreen");
     },
   },
 };
