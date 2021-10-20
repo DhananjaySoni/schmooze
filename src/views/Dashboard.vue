@@ -6,12 +6,12 @@
           <router-link to="/chatroom">
             <div class="card">
               <b-icon icon="chat-square-text"></b-icon>
-              <h2>Create chat room</h2>
+              <h2>Create/Join chat room</h2>
             </div>
           </router-link>
         </div>
         <div class="col-12 col-sm-6 col-md-4 mx-auto">
-          <router-link to="/">
+          <router-link to="/contacts">
             <div class="card">
               <b-icon icon="chat-dots"></b-icon>
 

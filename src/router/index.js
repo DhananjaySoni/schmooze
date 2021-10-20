@@ -30,9 +30,32 @@ const routes = [
     component: () => import(/* webpackChunkName: "chatroom" */ '../views/Chatroom.vue')
   },
   {
-    path: '/chatscreen',
+    path: '/contacts',
+    name: 'ChatDirectList',
+    component: () => import(/* webpackChunkName: "chatDirectList" */ '../views/ChatDirectList.vue'),
+  },
+  {
+    path: '/chat',
     name: 'Chatscreen',
-    component: () => import(/* webpackChunkName: "chatscreen" */ '../views/Chatscreen.vue')
+    redirect: '/',
+    component: () => import(/* webpackChunkName: "chatscreen" */ '../views/chatscreens/Chatscreen.vue'),
+    children: [
+      {
+        path: '/chat/room',
+        redirect:'/chatroom'
+      },
+      {
+        path: '/chat/room/:roomId',
+        name: 'ChatRoomScreen',
+        component: () => import(/* webpackChunkName: "chatRoomScreen" */ '../views/chatscreens/ChatRoomScreen.vue'),
+      },
+      
+      {
+        path: '/chat/:userId',
+        name: 'ChatDirectScreen',
+        component: () => import(/* webpackChunkName: "chatDirectScreen" */ '../views/chatscreens/ChatDirectScreen.vue'),
+      },
+    ]
   },
   {
     path: '/about',

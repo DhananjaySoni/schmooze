@@ -20,7 +20,7 @@
 }
 
 #nav {
-  padding: 30px;
+  padding: 3vh;
   position:absolute;
   top: 0;
   left: 0;
