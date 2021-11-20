@@ -1,7 +1,13 @@
 <template>
   <div class="chatRoomScreen">
-    <h3 class="text-center mt-3">User Name</h3>
     <div class="col-12 col-md-8 col-lg-6 col-xl-5 mx-auto chatBg">
+      <h3 class="text-center mb-4">User Name</h3>
+      <b-icon
+        icon="gear"
+        id="settings"
+        font-scale="1.5"
+        v-b-modal.modal-settings
+      ></b-icon>
       <div class="chatContainerRoot" id="chat-window">
         <div class="chatContainer send">
           <p class="m-0"><span class="small">Sender</span></p>
@@ -64,11 +70,58 @@
         ></b-button>
       </div>
     </div>
+
+    <!-- settings modal::begin -->
+    <b-modal id="modal-settings" size="lg" title="Settings" hide-footer
+      >Chat settings!
+
+      <div class="d-flex justify-content-center align-items-center mt-5">
+        <b-button variant="primary" @click="$bvModal.hide('modal-settings')">Close</b-button>
+      </div>
+    </b-modal>
+    <!-- settings modal::end -->
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  mounted() {
+    this.scrollToBottom();
+  },
+  methods: {
+    scrollToBottom() {
+      let chatWindow = document.getElementById("chat-window");
+      let xH = chatWindow.scrollHeight;
+      chatWindow.scrollTo(0, xH);
+    },
+    sendChat() {
+      let chatWindow = document.getElementById("chat-window");
+      let chatText = document.getElementById("chat");
+      let time = new Date();
+      let currentTime = time.getHours() + ":" + time.getMinutes();
+      if (chatText.innerHTML.length > 0) {
+        let newDiv = document.createElement("div");
+        newDiv.innerHTML = `<div style="border: 2px solid #dedede;
+          background-color: #f1f1f1;
+          border-radius: 5px;
+          padding: 5px;
+          margin: 7px 0;
+          text-align: right;">
+          <p class="m-0"><span class="small">Sender</span></p>
+          <p class="m-0">${chatText.innerHTML}</p>
+          <span class="small">${currentTime}</span>
+        </div>`;
+        chatWindow.appendChild(newDiv);
+
+        this.scrollToBottom();
+        this.clearChat();
+      }
+    },
+    clearChat() {
+      document.getElementById("chat").innerHTML = "";
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -76,6 +129,13 @@ export default {};
   background: #fff;
   padding: 20px;
   border-radius: 15px;
+}
+
+#settings {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  cursor: pointer;
 }
 
 .chatContainer {
@@ -135,14 +195,15 @@ export default {};
 .message-text {
   resize: none;
   box-sizing: border-box;
-  height: 45px;
+  min-height: 45px;
+  max-height: 135px;
   width: 100%;
   min-width: 270px;
   border: 1px solid #e4e7ec;
   border-radius: 20px;
   background-color: #f9fafb;
   outline: none;
-  padding: 10px;
+  padding: 20px;
   overflow: hidden;
   margin: 20px 10px;
   position: relative;

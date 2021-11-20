@@ -14,7 +14,7 @@
       </b-form-group>
     </b-form>
 
-    <h4 class="mt-5">Recent Chats</h4>
+    <h4 class="mt-5">Nearby Users</h4>
     
     <div class="row" v-for="x in 5" :key="x">
       <div class="col-2 col min-w-80px">

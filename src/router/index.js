@@ -62,6 +62,21 @@ const routes = [
     name: 'About',
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
+  {
+    path: '/schedule',
+    name: 'ScheduleMessage',
+    component: () => import(/* webpackChunkName: "schedule" */ '../views/ScheduleMessage.vue')
+  },
+  {
+    path: '/find-nearby',
+    name: 'FindNearby',
+    component: () => import(/* webpackChunkName: "find-nearby" */ '../views/FindNearby.vue')
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import(/* webpackChunkName: "profile" */ '../views/Profile.vue')
+  },
 ]
 
 const router = new VueRouter({

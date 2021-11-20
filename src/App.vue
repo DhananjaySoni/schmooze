@@ -4,8 +4,8 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
       <router-link to="/login">Sign In</router-link> |
-      <router-link to="/login">Logout</router-link> |
-      <router-link to="/login">profile</router-link>
+      <a href="#">Logout</a> |
+      <router-link to="/Profile">profile</router-link>
     </div>
     <router-view/>
   </div>

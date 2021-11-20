@@ -159,6 +159,7 @@ export default {
       font-weight:bold;
       padding:5px 15px;
       border-radius:10px;
+      cursor:pointer;
     }
 
     .active{

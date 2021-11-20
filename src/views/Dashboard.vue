@@ -20,11 +20,20 @@
           </router-link>
         </div>
         <div class="col-12 col-sm-6 col-md-4 mx-auto">
-          <router-link to="/">
+          <router-link to="/find-nearby">
             <div class="card">
               <b-icon icon="broadcast-pin"></b-icon>
 
               <h2>Find nearby users</h2>
+            </div>
+          </router-link>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 mx-auto">
+          <router-link to="/schedule">
+            <div class="card">
+              <b-icon icon="clock"></b-icon>
+
+              <h2>Schedule a message</h2>
             </div>
           </router-link>
         </div>
