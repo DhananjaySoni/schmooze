@@ -63,6 +63,12 @@
       </div>
       <div class="chat-wrapper">
         <div class="message-text col-md-9" contentEditable id="chat"></div>
+        <b-icon
+          icon="google"
+          id="google"
+          font-scale="1.5"
+          @click="searchText"
+        ></b-icon>
         <b-button class="sendbtn btn-sm" variant="dark" @click="sendChat"
           ><i class="far fa-paper-plane fa-2x"></i
         ></b-button>
@@ -70,11 +76,31 @@
     </div>
 
     <!-- settings modal::begin -->
-    <b-modal id="modal-settings" size="lg" title="Settings" hide-footer
-      >Chat settings!
+    <b-modal id="modal-settings" size="md" title="Settings" hide-footer>
+      <div class="settings-content text-center">
+        <h3>Chat Settings</h3>
+        <div class="btn btn-danger mb-5 mt-2 mr-2">Delete Chat Room</div>
+        <div class="btn btn-danger mb-5 mt-2">Exit Chat Room</div>
+        <h3>Participents</h3>
+        <div class="row m-0 mb-2" v-for="x in 10" :key="x">
+          <div class="col-5 col-md-6 text-left pl-md-5 pr-0 pr-md-3">
+            <p class="user-name">User{{ x }}</p>
+          </div>
+          <div class="col-3 pr-0 pr-md-3">
+            <button type="button" class="btn btn-info" disabled v-if="x == 4">
+              Admin
+            </button>
+          </div>
+          <div class="col-4 col-md-3">
+            <div class="btn btn-outline-danger">Remove</div>
+          </div>
+        </div>
+      </div>
 
       <div class="d-flex justify-content-center align-items-center mt-5">
-        <b-button variant="primary" @click="$bvModal.hide('modal-settings')">Close</b-button>
+        <b-button variant="primary" @click="$bvModal.hide('modal-settings')"
+          >Close</b-button
+        >
       </div>
     </b-modal>
     <!-- settings modal::end -->
@@ -118,6 +144,17 @@ export default {
     clearChat() {
       document.getElementById("chat").innerHTML = "";
     },
+    searchText() {
+      let chatText = document.getElementById("chat");
+      let text = chatText.innerHTML;
+      let replaced = text.split(" ").join("+");
+      if (text.trim().length > 0) {
+        window.open(
+          `https://www.google.com/search?q=${replaced}`,
+          "_blank" // <- This is what makes it open in a new window.
+        );
+      }
+    },
   },
 };
 </script>
@@ -127,7 +164,6 @@ export default {
   background: #fff;
   padding: 20px;
   border-radius: 15px;
-  position: relative;
 }
 
 #settings {
@@ -171,10 +207,11 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 .chatContainerRoot {
-  height: 60vh;
+  height: 55vh;
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
@@ -231,5 +268,34 @@ export default {
 
 .sendbtn i {
   color: #fff;
+}
+
+.settings-content {
+  max-height: 60vh !important;
+  overflow: auto;
+}
+
+.user-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#google {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 19%;
+  cursor: pointer;
+}
+
+#google:hover {
+  filter: drop-shadow(0 0 5px rgb(202, 202, 202));
+}
+
+@media (max-width: 768px) {
+  #google {
+    right: 15%;
+  }
 }
 </style>

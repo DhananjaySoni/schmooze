@@ -12,14 +12,14 @@
             <b-form @submit.prevent="onSubmit" class="w-100">
               <b-form-group
                 id="input-group-1"
-                label="Room Code:"
+                label="Room ID:"
                 label-for="input-1"
               >
                 <div class="inputField">
                   <b-icon icon="chat-square-text"></b-icon>
                   <b-form-input
                     id="input-1"
-                    v-model="roomCode"
+                    v-model="createForm.roomID"
                     required
                   ></b-form-input>
                 </div>
@@ -36,7 +36,7 @@
                   <b-form-input
                     id="input-2"
                     type="password"
-                    v-model="password"
+                    v-model="createForm.password"
                     required
                   ></b-form-input>
                 </div>
@@ -59,14 +59,14 @@
             <b-form @submit.prevent="onSubmit" class="w-100">
               <b-form-group
                 id="input-group-1"
-                label="Room Code:"
+                label="Room ID:"
                 label-for="input-1"
               >
                 <div class="inputField">
                   <b-icon icon="chat-square-text"></b-icon>
                   <b-form-input
                     id="input-1"
-                    v-model="roomCode"
+                    v-model="joinForm.roomID"
                     required
                   ></b-form-input>
                 </div>
@@ -83,7 +83,7 @@
                   <b-form-input
                     id="input-2"
                     type="password"
-                    v-model="password"
+                    v-model="joinForm.password"
                     required
                   ></b-form-input>
                 </div>
@@ -111,8 +111,15 @@ export default {
     return {
       showCreatePanel:true,
       showJoinPanel:false,
-      roomCode: "",
-      password: "",
+      createForm:{
+        roomID:"",
+        password:""
+      },
+      joinForm:{
+        roomID:"",
+        password:""
+      },
+
     };
   },
   methods: {
@@ -143,8 +150,10 @@ export default {
 
 <style lang="scss" scoped>
 .chatroom {
-  min-height: 100vh;
-  padding-top: 100px;
+  min-height: calc(100vh - 56px);
+  padding-top: 80px;
+  background: rgb(224, 240, 250);
+
 
   .roomOptionsContainer{
     width:100%;

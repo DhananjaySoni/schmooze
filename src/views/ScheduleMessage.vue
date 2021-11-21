@@ -5,52 +5,59 @@
         <div class="col-12 col-md-8 col-lg-6 col-xl-5 mx-auto">
           <div class="card">
             <b-form @submit="onSubmit" @reset="onReset">
-              <b-form-group
-                id="input-group-1"
-                label="Email address:"
-                label-for="input-1"
-              >
+              <b-form-group id="input-group-1" label="To:" label-for="input-1">
                 <b-form-input
                   id="input-1"
-                  v-model="form.email"
-                  type="email"
-                  placeholder="Enter email"
+                  type="text"
+                  v-model="form.to"
+                  placeholder="Recipient's email or name"
                   required
                 ></b-form-input>
               </b-form-group>
 
               <b-form-group
                 id="input-group-2"
-                label="Your Name:"
+                label="Date:"
                 label-for="input-2"
               >
                 <b-form-input
                   id="input-2"
-                  v-model="form.name"
-                  placeholder="Enter name"
+                  v-model="form.date"
+                  type="date"
+                  placeholder="Enter Date"
                   required
                 ></b-form-input>
               </b-form-group>
 
-              <!-- <b-form-group id="input-group-3" label="Food:" label-for="input-3">
-        <b-form-select
-          id="input-3"
-          v-model="form.food"
-          :options="foods"
-          required
-        ></b-form-select>
-      </b-form-group>
+              <b-form-group
+                id="input-group-3"
+                label="Time:"
+                label-for="input-3"
+              >
+                <b-form-input
+                  id="input-3"
+                  v-model="form.time"
+                  type="time"
+                  placeholder="Enter time"
+                  required
+                ></b-form-input>
+              </b-form-group>
 
-      <b-form-group id="input-group-4" v-slot="{ ariaDescribedby }">
-        <b-form-checkbox-group
-          v-model="form.checked"
-          id="checkboxes-4"
-          :aria-describedby="ariaDescribedby"
-        >
-          <b-form-checkbox value="me">Check me out</b-form-checkbox>
-          <b-form-checkbox value="that">Check that out</b-form-checkbox>
-        </b-form-checkbox-group>
-      </b-form-group> -->
+              <b-form-group
+                id="input-group-4"
+                label="Message:"
+                label-for="input-4"
+              >
+                <b-form-textarea
+                  id="input-4"
+                  v-model="form.text"
+                  placeholder="Your message"
+                  rows="3"
+                  max-rows="6"
+                  style="overflow: auto"
+                ></b-form-textarea>
+              </b-form-group>
+
               <div class="d-flex justify-content-center align-items-center">
                 <b-button type="submit" variant="primary" class="mr-5">
                   Submit
@@ -70,21 +77,25 @@ export default {
   data() {
     return {
       form: {
-        email: "",
-        name: "",
-      }
+        to: "",
+        date: "",
+        time: "",
+        text: "",
+      },
     };
   },
   methods: {
     onSubmit(event) {
       event.preventDefault();
-        alert(JSON.stringify(this.form));
+      alert(JSON.stringify(this.form));
     },
     onReset(event) {
       event.preventDefault();
       // Reset our form values
-      this.form.email = "";
-      this.form.name = "";
+      this.form.to = "";
+      this.form.date = "";
+      this.form.time = "";
+      this.form.text = "";
     },
   },
 };
@@ -92,8 +103,8 @@ export default {
 
 <style lang="scss" scoped>
 .schedule {
-  height: 100vh;
-  padding-top: 15vh;
+  min-height: calc(100vh - 56px);
+  padding-top: 50px;
   overflow: hidden;
   background: rgb(224, 240, 250);
 

@@ -55,9 +55,8 @@ export default {
 <style lang="scss" scoped>
 
 .dashboard {
-  min-height: 100vh;
+  min-height: calc(100vh - 56px);
   width: 100%;
-  padding-top: 100px;
   display: flex;
   justify-content: center;
   align-items: center;

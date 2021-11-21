@@ -62,9 +62,13 @@
         </div>
       </div>
       <div class="chat-wrapper">
-        <div class="message-text col-md-9" contentEditable id="chat">
-          <!-- <div contentEditable class="w-100 h-100 textContainer"></div> -->
-        </div>
+        <div class="message-text col-md-9" contentEditable id="chat"></div>
+        <b-icon
+          icon="google"
+          id="google"
+          font-scale="1.5"
+          @click="searchText"
+        ></b-icon>
         <b-button class="sendbtn btn-sm" variant="dark" @click="sendChat"
           ><i class="far fa-paper-plane fa-2x"></i
         ></b-button>
@@ -72,11 +76,23 @@
     </div>
 
     <!-- settings modal::begin -->
-    <b-modal id="modal-settings" size="lg" title="Settings" hide-footer
-      >Chat settings!
+    <b-modal id="modal-settings" size="lg" title="Settings" hide-footer>
+      <div class="settings-content">
+        <h3 class="mb-4 text-center">User Information</h3>
+        <div class="row m-0">
+          <div class="col-6 text-right pr-5"><p>Name:</p></div>
+          <div class="col-6"><p>UserName</p></div>
+          <div class="col-6 text-right pr-5"><p>Email:</p></div>
+          <div class="col-6"><p>User Email</p></div>
+          <div class="col-6 text-right pr-5"><p>Phone:</p></div>
+          <div class="col-6"><p>User phone</p></div>
+        </div>
+      </div>
 
       <div class="d-flex justify-content-center align-items-center mt-5">
-        <b-button variant="primary" @click="$bvModal.hide('modal-settings')">Close</b-button>
+        <b-button variant="primary" @click="$bvModal.hide('modal-settings')"
+          >Close</b-button
+        >
       </div>
     </b-modal>
     <!-- settings modal::end -->
@@ -85,6 +101,9 @@
 
 <script>
 export default {
+  data() {
+    return {};
+  },
   mounted() {
     this.scrollToBottom();
   },
@@ -119,6 +138,18 @@ export default {
     },
     clearChat() {
       document.getElementById("chat").innerHTML = "";
+    },
+    searchText() {
+      let chatText = document.getElementById("chat");
+      let text = chatText.innerHTML;
+      let replaced = text.split(" ").join("+");
+
+      if (text.length > 0) {
+        window.open(
+          `https://www.google.com/search?q=${replaced}`,
+          "_blank" // <- This is what makes it open in a new window.
+        );
+      }
     },
   },
 };
@@ -172,10 +203,11 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 .chatContainerRoot {
-  height: 60vh;
+  height: 55vh;
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
@@ -203,7 +235,7 @@ export default {
   border-radius: 20px;
   background-color: #f9fafb;
   outline: none;
-  padding: 20px;
+  padding: 20px 50px 20px 20px;
   overflow: hidden;
   margin: 20px 10px;
   position: relative;
@@ -232,5 +264,28 @@ export default {
 
 .sendbtn i {
   color: #fff;
+}
+
+.settings-content p {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+#google {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 19%;
+  cursor: pointer;
+}
+
+#google:hover {
+  filter: drop-shadow(0 0 5px rgb(202, 202, 202));
+}
+
+@media (max-width: 768px) {
+  #google {
+    right: 15%;
+  }
 }
 </style>

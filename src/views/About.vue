@@ -44,8 +44,8 @@ export default {};
 
 <style>
 .about {
-  height: 100vh;
-  padding-top: 10vh;
+  min-height: calc(100vh - 56px);
+  padding: 40px 0;
   background: rgb(224, 240, 250);
 }
 </style>

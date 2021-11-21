@@ -62,9 +62,9 @@
                   <b-form-input
                     id="input-3"
                     type="tel"
-                    v-model="form.mobile"
+                    v-model="form.phone"
                     aria-describedby="input-3-live-feedback"
-                    :state="validateState('mobile')"
+                    :state="validateState('phone')"
                     required
                   ></b-form-input>
                   <b-form-invalid-feedback id="input-3-live-feedback"
@@ -123,6 +123,7 @@ import {
   maxLength,
   email,
 } from "vuelidate/lib/validators";
+import axios from "axios";
 export default {
   mixins: [validationMixin],
   data() {
@@ -130,7 +131,7 @@ export default {
       form: {
         name: "",
         email: "",
-        mobile: "",
+        phone: "",
         password: "",
       },
     };
@@ -144,7 +145,7 @@ export default {
         required,
         email,
       },
-      mobile: {
+      phone: {
         required,
         minLength: minLength(10),
         maxLength: maxLength(10),
@@ -163,8 +164,9 @@ export default {
     resetForm() {
       this.form = {
         email: null,
-        mobile: null,
+        phone: null,
         password: null,
+        name: null,
       };
 
       this.$nextTick(() => {
@@ -176,7 +178,15 @@ export default {
       if (this.$v.form.$anyError) {
         return;
       }
-      alert(this.form);
+      axios
+        .post("http://localhost:5000/api/signup", this.form)
+        .then(({ data }) => {
+          console.log(data);
+          this.$router.push("/login");
+        })
+        .catch((resp) => {
+          console.log(resp);
+        });
     },
   },
 };
@@ -184,8 +194,10 @@ export default {
 
 <style lang="scss" scoped>
 .signup {
-  min-height: 100vh;
-  padding-top: 100px;
+  min-height: calc(100vh - 56px);
+  padding-top: 50px;
+  background: rgb(224, 240, 250);
+
   .row {
     height: 100%;
     .card {
@@ -197,7 +209,7 @@ export default {
       > h2 {
         font-weight: 800 !important;
         padding-bottom: 20px;
-        text-align:center;
+        text-align: center;
       }
 
       > span {

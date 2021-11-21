@@ -77,6 +77,7 @@
 </template>
 
 <script>
+import axios from "axios"
 export default {
   data() {
     return {
@@ -88,7 +89,15 @@ export default {
   },
   methods: {
     onSubmit() {
-      this.$router.push("/dashboard");
+      axios
+        .post("http://localhost:5000/api/signin", this.form)
+        .then(({ data }) => {
+          console.log(data);
+          this.$router.push("/dashboard");
+        })
+        .catch((resp) => {
+          console.error(resp);
+        });
     },
   },
 };
@@ -96,23 +105,23 @@ export default {
 
 <style lang="scss" scoped>
 .login {
-  min-height: 100vh;
-    padding-top: 100px;
+  min-height: calc(100vh - 56px);
+  padding-top: 50px;
+  background: rgb(224, 240, 250);
 
   .row {
-    min-height: 100vh;
+    min-height: 100%;
 
     .card {
       width: 100%;
       box-shadow: 0px 0px 10px rgb(185, 184, 184);
       padding: 20px;
       border-radius: 20px;
-      
 
       > h2 {
         font-weight: 800 !important;
         padding-bottom: 20px;
-        text-align:center;
+        text-align: center;
       }
 
       a {

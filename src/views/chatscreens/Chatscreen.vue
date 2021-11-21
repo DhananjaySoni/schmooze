@@ -14,8 +14,9 @@ export default {
 
 <style scoped>
 .chatscreen {
-  height: 100vh;
-  padding-top: 7vh;
+  min-height: calc(100vh - 56px);
+  padding-top: 40px;
+  padding-bottom: 20px;
   overflow: hidden;
   background: rgb(224, 240, 250);
 }

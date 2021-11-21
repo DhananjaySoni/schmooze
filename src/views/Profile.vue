@@ -85,7 +85,7 @@ export default {
 
 <style lang="scss" scoped>
 .schedule {
-  height: 100vh;
+  min-height: calc(100vh - 56px);
   padding-top: 15vh;
   overflow: hidden;
   background: rgb(224, 240, 250);
