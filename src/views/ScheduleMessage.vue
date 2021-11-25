@@ -73,6 +73,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   data() {
     return {
@@ -83,6 +85,18 @@ export default {
         text: "",
       },
     };
+  },
+  computed: {
+    // mix the getters into computed with object spread operator
+    ...mapGetters([
+      "isAuthenticated",
+      // ...
+    ]),
+  },
+  mounted() {
+    if (!this.isAuthenticated) {
+      this.$router.push("/login");
+    }
   },
   methods: {
     onSubmit(event) {

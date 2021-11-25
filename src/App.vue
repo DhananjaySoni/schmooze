@@ -11,7 +11,8 @@
           <b-navbar-nav class="ml-auto">
             <b-nav-item href="#/">Dashboard</b-nav-item>
             <b-nav-item href="#/chatroom">Chat Room</b-nav-item>
-            <b-nav-item href="#/schedule">Schedule Message</b-nav-item>
+            <b-nav-item href="#/contacts">Direct Chat</b-nav-item>
+            <!-- <b-nav-item href="#/schedule">Schedule Message</b-nav-item> -->
             <b-nav-item href="#/about">About</b-nav-item>
             <b-nav-item-dropdown right>
               <!-- Using 'button-content' slot -->
@@ -21,7 +22,10 @@
               <b-dropdown-item href="#/profile" class="m-0"
                 >Profile</b-dropdown-item
               >
-              <b-dropdown-item href="#/login" class="m-0"
+              <b-dropdown-item
+                class="m-0"
+                @click="signout"
+                v-if="isAuthenticated"
                 >Sign Out</b-dropdown-item
               >
             </b-nav-item-dropdown>
@@ -32,6 +36,35 @@
     <router-view />
   </div>
 </template>
+
+<script>
+import axios from "axios";
+import { mapGetters } from "vuex";
+
+export default {
+  methods: {
+    signout() {
+      axios
+        .get("http://localhost:5000/api/signout")
+        .then(({ data }) => {
+          console.log(data);
+          this.$store.dispatch("removeUser");
+          this.$router.push("/login");
+        })
+        .catch((resp) => {
+          console.error(resp);
+        });
+    },
+  },
+  computed: {
+    // mix the getters into computed with object spread operator
+    ...mapGetters([
+      "isAuthenticated",
+      // ...
+    ]),
+  },
+};
+</script>
 
 <style lang="scss">
 #app {

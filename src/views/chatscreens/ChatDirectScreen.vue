@@ -9,56 +9,23 @@
         v-b-modal.modal-settings
       ></b-icon>
       <div class="chatContainerRoot" id="chat-window">
-        <div class="chatContainer send">
-          <p class="m-0"><span class="small">Sender</span></p>
-          <p class="m-0">Hello. How are you today?</p>
-          <span class="time small">11:00</span>
-        </div>
+        <p v-if="!chats.length" class="text-center mt-5">No chats...</p>
+        <div v-for="(chat, chatIndex) in chats" :key="chatIndex">
+          <div class="chatContainer send" v-if="chat.uid === user.uid">
+            <p class="m-0">
+              <span class="small">{{ chat.name }}</span>
+            </p>
+            <p class="m-0">{{ chat.msg }}</p>
+            <span class="time small">{{ chat.time }}</span>
+          </div>
 
-        <div class="chatContainer darker recv">
-          <p class="m-0"><span class="small">Receiver</span></p>
-          <p class="m-0">Hey! I'm fine. Thanks for asking!</p>
-          <span class="time small">11:01</span>
-        </div>
-
-        <div class="chatContainer send">
-          <p class="m-0"><span class="small">Sender</span></p>
-          <p class="m-0">Sweet! So, what do you wanna do today?</p>
-          <span class="time small">11:02</span>
-        </div>
-
-        <div class="chatContainer darker recv">
-          <p class="m-0"><span class="small">Receiver</span></p>
-          <p class="m-0">
-            Nah, I dunno. Play soccer.. or learn more coding perhaps?
-          </p>
-          <span class="time small">11:05</span>
-        </div>
-        <div class="chatContainer send">
-          <p class="m-0"><span class="small">Sender</span></p>
-          <p class="m-0">Sweet! So, what do you wanna do today?</p>
-          <span class="time small">11:02</span>
-        </div>
-
-        <div class="chatContainer darker recv">
-          <p class="m-0"><span class="small">Receiver</span></p>
-          <p class="m-0">
-            Nah, I dunno. Play soccer.. or learn more coding perhaps?
-          </p>
-          <span class="time small">11:05</span>
-        </div>
-        <div class="chatContainer send">
-          <p class="m-0"><span class="small">Sender</span></p>
-          <p class="m-0">Sweet! So, what do you wanna do today?</p>
-          <span class="time small">11:02</span>
-        </div>
-
-        <div class="chatContainer darker recv">
-          <p class="m-0"><span class="small">Receiver</span></p>
-          <p class="m-0">
-            Nah, I dunno. Play soccer.. or learn more coding perhaps?
-          </p>
-          <span class="time small">11:05</span>
+          <div class="chatContainer darker recv" v-else>
+            <p class="m-0">
+              <span class="small">{{ chat.name }}</span>
+            </p>
+            <p class="m-0">{{ chat.msg }}</p>
+            <span class="time small">{{ chat.time }}</span>
+          </div>
         </div>
       </div>
       <div class="chat-wrapper">
@@ -81,11 +48,17 @@
         <h3 class="mb-4 text-center">User Information</h3>
         <div class="row m-0">
           <div class="col-6 text-right pr-5"><p>Name:</p></div>
-          <div class="col-6"><p>UserName</p></div>
+          <div class="col-6">
+            <p>{{ currentChatUser.name }}</p>
+          </div>
           <div class="col-6 text-right pr-5"><p>Email:</p></div>
-          <div class="col-6"><p>User Email</p></div>
+          <div class="col-6">
+            <p>{{ currentChatUser.email }}</p>
+          </div>
           <div class="col-6 text-right pr-5"><p>Phone:</p></div>
-          <div class="col-6"><p>User phone</p></div>
+          <div class="col-6">
+            <p>{{ currentChatUser.phone }}</p>
+          </div>
         </div>
       </div>
 
@@ -100,9 +73,42 @@
 </template>
 
 <script>
+import CryptoJS from "crypto-js";
+import "../../Firebase";
+const { getDatabase, ref, set, onValue } = require("firebase/database");
+
 export default {
   data() {
-    return {};
+    return {
+      currentChatUser: {},
+      chats: [],
+      user: {},
+    };
+  },
+  created() {
+    this.user = this.$store.getters.getUser;
+    this.currentChatUser = this.$store.getters.currentChatUser;
+    console.log(this.currentChatUser);
+    const db = getDatabase();
+
+    const database = ref(db, "chats/" + this.user.uid);
+    onValue(database, (snapshot) => {
+      console.log("0");
+
+      this.chats = [];
+      snapshot.forEach((doc) => {
+        let item = {};
+        item = doc.val();
+        //DECRYPT
+        var bytes = CryptoJS.AES.decrypt(item.msg, "secret-key");
+        var originalText = bytes.toString(CryptoJS.enc.Utf8);
+        // console.log(originalText);
+        item.msg = originalText;
+        this.chats.push(item);
+      });
+      console.log("chats", this.chats);
+      this.scrollToBottom();
+    });
   },
   mounted() {
     this.scrollToBottom();
@@ -114,25 +120,47 @@ export default {
       chatWindow.scrollTo(0, xH);
     },
     sendChat() {
-      let chatWindow = document.getElementById("chat-window");
-      let chatText = document.getElementById("chat");
+      // let chatWindow = document.getElementById("chat-window");
+      let chatText = document.getElementById("chat").innerHTML;
       let time = new Date();
-      let currentTime = time.getHours() + ":" + time.getMinutes();
-      if (chatText.innerHTML.length > 0) {
-        let newDiv = document.createElement("div");
-        newDiv.innerHTML = `<div style="border: 2px solid #dedede;
-          background-color: #f1f1f1;
-          border-radius: 5px;
-          padding: 5px;
-          margin: 7px 0;
-          text-align: right;">
-          <p class="m-0"><span class="small">Sender</span></p>
-          <p class="m-0">${chatText.innerHTML}</p>
-          <span class="small">${currentTime}</span>
-        </div>`;
-        chatWindow.appendChild(newDiv);
+      let hrs = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
+      let mins =
+        time.getMinutes() < 10
+          ? (mins = "0" + time.getMinutes())
+          : (mins = time.getMinutes());
+      let currentTime = hrs + ":" + mins;
+      console.log(currentTime);
+      if (chatText.length > 0) {
+        console.log("1");
+        //ENCRYPT
+        var ciphertext = CryptoJS.AES.encrypt(
+          chatText,
+          "secret-key"
+        ).toString();
+        const db = getDatabase();
+        let chatID = time.getTime();
+        const database2 = ref(db, "chats/" + this.currentChatUser.uid +"/"+ chatID);
+        set(database2, {
+          name: this.user.name,
+          uid: this.user.uid,
+          msg: ciphertext,
+          time: currentTime,
+        }).then(() => {
+          console.log("2");
 
-        this.scrollToBottom();
+          const database3 = ref(db, "chats/" + this.user.uid +"/"+ chatID);
+          set(database3, {
+            name: this.user.name,
+            uid: this.user.uid,
+            msg: ciphertext,
+            time: currentTime,
+          }).then(() => {
+            console.log("3");
+
+            this.scrollToBottom();
+          });
+          this.scrollToBottom();
+        });
         this.clearChat();
       }
     },

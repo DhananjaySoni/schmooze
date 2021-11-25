@@ -25,7 +25,17 @@ const routes = [
     component: () => import(/* webpackChunkName: "login" */ '../views/auth/Signin.vue')
   },
   {
+    path: '/forgot-password',
+    name: 'Forgot Password',
+    component: () => import(/* webpackChunkName: "forgot-password" */ '../views/auth/ForgotPassword.vue')
+  },
+  {
     path: '/chatroom',
+    name: 'Chatroom',
+    component: () => import(/* webpackChunkName: "chatroom" */ '../views/Chatroom.vue')
+  },
+  {
+    path: '/chatroom/:chatroomId',
     name: 'Chatroom',
     component: () => import(/* webpackChunkName: "chatroom" */ '../views/Chatroom.vue')
   },

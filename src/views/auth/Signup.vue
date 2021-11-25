@@ -124,6 +124,8 @@ import {
   email,
 } from "vuelidate/lib/validators";
 import axios from "axios";
+import { mapGetters } from "vuex";
+
 export default {
   mixins: [validationMixin],
   data() {
@@ -135,6 +137,18 @@ export default {
         password: "",
       },
     };
+  },
+  computed: {
+    // mix the getters into computed with object spread operator
+    ...mapGetters([
+      "isAuthenticated",
+      // ...
+    ]),
+  },
+  mounted() {
+    if (this.isAuthenticated) {
+      this.$router.push("/dashboard");
+    }
   },
   validations: {
     form: {
@@ -178,6 +192,7 @@ export default {
       if (this.$v.form.$anyError) {
         return;
       }
+      console.log(this.form)
       axios
         .post("http://localhost:5000/api/signup", this.form)
         .then(({ data }) => {
@@ -186,6 +201,7 @@ export default {
         })
         .catch((resp) => {
           console.log(resp);
+          alert(resp)
         });
     },
   },

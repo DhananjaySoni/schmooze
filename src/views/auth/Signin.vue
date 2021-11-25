@@ -47,7 +47,7 @@
                 Login
               </b-button>
               <div class="d-flex justify-content-between">
-                <b-form-group id="input-group-4" v-slot="{ ariaDescribedby }">
+                <!-- <b-form-group id="input-group-4" v-slot="{ ariaDescribedby }">
                   <b-form-checkbox-group
                     v-model="form.checked"
                     id="checkboxes-4"
@@ -58,7 +58,7 @@
                       >Remember Me</b-form-checkbox
                     >
                   </b-form-checkbox-group>
-                </b-form-group>
+                </b-form-group> -->
 
                 <router-link to="/forgot-password"
                   >Forgot Password ?</router-link
@@ -78,6 +78,7 @@
 
 <script>
 import axios from "axios"
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
@@ -87,16 +88,31 @@ export default {
       },
     };
   },
+  computed: {
+    // mix the getters into computed with object spread operator
+    ...mapGetters([
+      "isAuthenticated",
+      // ...
+    ]),
+  },
+  mounted() {
+    if (this.isAuthenticated) {
+      this.$router.push("/dashboard");
+    }
+  },
   methods: {
     onSubmit() {
+      
       axios
         .post("http://localhost:5000/api/signin", this.form)
         .then(({ data }) => {
           console.log(data);
+          this.$store.dispatch("setUser",data);
           this.$router.push("/dashboard");
         })
         .catch((resp) => {
           console.error(resp);
+          alert(resp.message)
         });
     },
   },

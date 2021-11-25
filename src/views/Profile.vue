@@ -15,6 +15,7 @@
                   v-model="form.email"
                   type="email"
                   required
+                  disabled
                 ></b-form-input>
               </b-form-group>
 
@@ -27,6 +28,7 @@
                   id="input-2"
                   v-model="form.name"
                   required
+                  disabled
                 ></b-form-input>
               </b-form-group>
               <b-form-group
@@ -39,15 +41,16 @@
                   type="tel"
                   v-model="form.phone"
                   required
+                  disabled
                 ></b-form-input>
               </b-form-group>
 
-              <div class="d-flex justify-content-center align-items-center">
+              <!-- <div class="d-flex justify-content-center align-items-center">
                 <b-button type="submit" variant="primary" class="mr-5">
                   Save
                 </b-button>
                 <b-button type="reset" variant="danger">Reset</b-button>
-              </div>
+              </div> -->
             </b-form>
           </div>
         </div>
@@ -57,6 +60,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import axios from "axios";
 export default {
   data() {
     return {
@@ -66,6 +71,24 @@ export default {
         phone: "1234567890",
       },
     };
+  },
+  computed: {
+    // mix the getters into computed with object spread operator
+    ...mapGetters([
+      "isAuthenticated",
+      "getUser",
+      // ...
+    ]),
+  },
+  created() {
+    this.form.email = this.getUser.email;
+    this.form.name = this.getUser.name;
+    this.form.phone = this.getUser.phone;
+  },
+  mounted() {
+    if (!this.isAuthenticated) {
+      this.$router.push("/login");
+    }
   },
   methods: {
     onSubmit(event) {

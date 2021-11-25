@@ -28,7 +28,7 @@
             </div>
           </router-link>
         </div>
-        <div class="col-12 col-sm-6 col-md-4 mx-auto">
+        <!-- <div class="col-12 col-sm-6 col-md-4 mx-auto">
           <router-link to="/schedule">
             <div class="card">
               <b-icon icon="clock"></b-icon>
@@ -36,7 +36,7 @@
               <h2>Schedule a message</h2>
             </div>
           </router-link>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -44,16 +44,64 @@
 
 <script>
 // @ is an alias to /src
-
+import { mapGetters } from "vuex";
+import axios from "axios";
 export default {
   name: "Dashboard",
-  components: {},
+  computed: {
+    // mix the getters into computed with object spread operator
+    ...mapGetters([
+      "isAuthenticated",
+      "getUser",
+      // ...
+    ]),
+  },
+  data() {
+    return {
+      longitude: "",
+      latitude: "",
+    };
+  },
+  mounted() {
+    if (!this.isAuthenticated) {
+      this.$router.push("/login");
+    }
+
+    this.getLocation();
+
+  },
+  methods: {
+    getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(this.showPosition);
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    },
+    showPosition(position) {
+      this.longitude = position.coords.longitude;
+      this.latitude = position.coords.latitude;
+      console.log(this.longitude, this.latitude);
+          
+    axios
+      .post("http://localhost:5000/api/geostore", {
+        lat: this.latitude,
+        lng: this.longitude,
+        uid: this.getUser.uid,
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((resp) => {
+        console.log(resp);
+      });
+    },
+  },
 };
 </script>
 
 
 <style lang="scss" scoped>
-
 .dashboard {
   min-height: calc(100vh - 56px);
   width: 100%;
@@ -62,8 +110,8 @@ export default {
   align-items: center;
   background: rgb(224, 240, 250);
 
-  a{
-    color:#000;
+  a {
+    color: #000;
   }
 
   .container {
@@ -80,15 +128,15 @@ export default {
         align-items: center;
         margin-bottom: 20px;
 
-        >.b-icon{
-          font-size:30px;
-          margin-bottom:20px;
-          filter:drop-shadow(0 0 5px rgb(187, 184, 184));
+        > .b-icon {
+          font-size: 30px;
+          margin-bottom: 20px;
+          filter: drop-shadow(0 0 5px rgb(187, 184, 184));
         }
 
         > h2 {
           text-align: center;
-          font-weight:700 !important;
+          font-weight: 700 !important;
         }
       }
     }

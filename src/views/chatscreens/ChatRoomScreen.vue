@@ -1,7 +1,7 @@
 <template>
   <div class="chatRoomScreen">
     <div class="col-12 col-md-8 col-lg-6 col-xl-5 mx-auto chatBg">
-      <h3 class="text-center mb-4">Room Name</h3>
+      <h3 class="text-center mb-4">{{ chatroomDetails.roomName }}</h3>
       <b-icon
         icon="gear"
         id="settings"
@@ -9,56 +9,23 @@
         v-b-modal.modal-settings
       ></b-icon>
       <div class="chatContainerRoot" id="chat-window">
-        <div class="chatContainer send">
-          <p class="m-0"><span class="small">Sender</span></p>
-          <p class="m-0">Hello. How are you today?</p>
-          <span class="time small">11:00</span>
-        </div>
+        <p v-if="!chats.length" class="text-center mt-5">No chats...</p>
+        <div v-for="(chat, chatIndex) in chats" :key="chatIndex">
+          <div class="chatContainer send" v-if="chat.uid === user.uid">
+            <p class="m-0">
+              <span class="small">{{ chat.name }}</span>
+            </p>
+            <p class="m-0">{{ chat.msg }}</p>
+            <span class="time small">{{ chat.time }}</span>
+          </div>
 
-        <div class="chatContainer darker recv">
-          <p class="m-0"><span class="small">Receiver</span></p>
-          <p class="m-0">Hey! I'm fine. Thanks for asking!</p>
-          <span class="time small">11:01</span>
-        </div>
-
-        <div class="chatContainer send">
-          <p class="m-0"><span class="small">Sender</span></p>
-          <p class="m-0">Sweet! So, what do you wanna do today?</p>
-          <span class="time small">11:02</span>
-        </div>
-
-        <div class="chatContainer darker recv">
-          <p class="m-0"><span class="small">Receiver</span></p>
-          <p class="m-0">
-            Nah, I dunno. Play soccer.. or learn more coding perhaps?
-          </p>
-          <span class="time small">11:05</span>
-        </div>
-        <div class="chatContainer send">
-          <p class="m-0"><span class="small">Sender</span></p>
-          <p class="m-0">Sweet! So, what do you wanna do today?</p>
-          <span class="time small">11:02</span>
-        </div>
-
-        <div class="chatContainer darker recv">
-          <p class="m-0"><span class="small">Receiver</span></p>
-          <p class="m-0">
-            Nah, I dunno. Play soccer.. or learn more coding perhaps?
-          </p>
-          <span class="time small">11:05</span>
-        </div>
-        <div class="chatContainer send">
-          <p class="m-0"><span class="small">Sender</span></p>
-          <p class="m-0">Sweet! So, what do you wanna do today?</p>
-          <span class="time small">11:02</span>
-        </div>
-
-        <div class="chatContainer darker recv">
-          <p class="m-0"><span class="small">Receiver</span></p>
-          <p class="m-0">
-            Nah, I dunno. Play soccer.. or learn more coding perhaps?
-          </p>
-          <span class="time small">11:05</span>
+          <div class="chatContainer darker recv" v-else>
+            <p class="m-0">
+              <span class="small">{{ chat.name }}</span>
+            </p>
+            <p class="m-0">{{ chat.msg }}</p>
+            <span class="time small">{{ chat.time }}</span>
+          </div>
         </div>
       </div>
       <div class="chat-wrapper">
@@ -79,20 +46,46 @@
     <b-modal id="modal-settings" size="md" title="Settings" hide-footer>
       <div class="settings-content text-center">
         <h3>Chat Settings</h3>
-        <div class="btn btn-danger mb-5 mt-2 mr-2">Delete Chat Room</div>
-        <div class="btn btn-danger mb-5 mt-2">Exit Chat Room</div>
-        <h3>Participents</h3>
-        <div class="row m-0 mb-2" v-for="x in 10" :key="x">
+        <div
+          class="btn btn-danger mb-3 mt-2 mr-2"
+          @click="deleteChatroom"
+          v-if="isAdmin"
+        >
+          Delete Chat Room
+        </div>
+        <div class="btn btn-danger mb-3 mt-2" @click="exitChatroom">
+          Exit Chat Room
+        </div>
+        <p class="mb-4">
+          Room Password : <span>{{ chatroomDetails.password }}</span>
+        </p>
+        <h3>Participants</h3>
+        <div
+          class="row m-0 mb-2"
+          v-for="(user, userIndex) in chatroomDetails.users"
+          :key="userIndex"
+        >
           <div class="col-5 col-md-6 text-left pl-md-5 pr-0 pr-md-3">
-            <p class="user-name">User{{ x }}</p>
+            <p class="user-name">{{ user.name }}</p>
           </div>
           <div class="col-3 pr-0 pr-md-3">
-            <button type="button" class="btn btn-info" disabled v-if="x == 4">
+            <button
+              type="button"
+              class="btn btn-info"
+              disabled
+              v-if="user.isAdmin"
+            >
               Admin
             </button>
           </div>
-          <div class="col-4 col-md-3">
-            <div class="btn btn-outline-danger">Remove</div>
+          <div class="col-4 col-md-3" v-if="isAdmin">
+            <div
+              class="btn btn-outline-danger"
+              @click="removeUser(user)"
+              v-if="!user.isAdmin"
+            >
+              Remove
+            </div>
           </div>
         </div>
       </div>
@@ -108,7 +101,63 @@
 </template>
 
 <script>
+import axios from "axios";
+import CryptoJS from "crypto-js";
+import firebase from "../../Firebase";
+const { getDatabase, ref, set, onValue } = require("firebase/database");
+// import firebase from 'firebase';
 export default {
+  data() {
+    return {
+      // ref: firebase.database().ref('ChatRoom/'),
+      roomId: this.$route.params.roomId,
+      chats: [],
+      user: {},
+      chatroomDetails: {},
+      isAdmin: false,
+    };
+  },
+  created() {
+    this.user = this.$store.getters.getUser;
+
+    axios
+      .post("http://localhost:5000/api/chatroomDetails", {
+        roomId: this.roomId,
+      })
+      .then(({ data }) => {
+        console.log(data.details);
+
+        this.chatroomDetails = data.details;
+        // console.log(this.user);
+        this.isAdmin = this.chatroomDetails.users[this.user.uid].isAdmin;
+        console.log(this.chatroomDetails.users);
+        if (this.chatroomDetails.users[this.user.uid] == null) {
+          this.$router.push("/dashboard");
+          // console.log('out');
+        }
+      })
+      .catch((resp) => {
+        console.log(resp);
+      });
+    const db = getDatabase();
+
+    const database = ref(db, "ChatRoom/" + this.roomId + "/chats");
+    onValue(database, (snapshot) => {
+      this.chats = [];
+      snapshot.forEach((doc) => {
+        let item = {};
+        item = doc.val();
+        //DECRYPT
+        var bytes = CryptoJS.AES.decrypt(item.msg, "secret-key");
+        var originalText = bytes.toString(CryptoJS.enc.Utf8);
+        // console.log(originalText);
+        item.msg = originalText;
+        this.chats.push(item);
+      });
+      console.log("chats", this.chats);
+      this.scrollToBottom();
+    });
+  },
   mounted() {
     this.scrollToBottom();
   },
@@ -119,25 +168,36 @@ export default {
       chatWindow.scrollTo(0, xH);
     },
     sendChat() {
-      let chatWindow = document.getElementById("chat-window");
-      let chatText = document.getElementById("chat");
+      // let chatWindow = document.getElementById("chat-window");
+      let chatText = document.getElementById("chat").innerHTML;
       let time = new Date();
-      let currentTime = time.getHours() + ":" + time.getMinutes();
-      if (chatText.innerHTML.length > 0) {
-        let newDiv = document.createElement("div");
-        newDiv.innerHTML = `<div style="border: 2px solid #dedede;
-          background-color: #f1f1f1;
-          border-radius: 5px;
-          padding: 5px;
-          margin: 7px 0;
-          text-align: right;">
-          <p class="m-0"><span class="small">Sender</span></p>
-          <p class="m-0">${chatText.innerHTML}</p>
-          <span class="time small">${currentTime}</span>
-        </div>`;
-        chatWindow.appendChild(newDiv);
-
-        this.scrollToBottom();
+      let hrs = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
+      let mins =
+        time.getMinutes() < 10
+          ? (mins = "0" + time.getMinutes())
+          : (mins = time.getMinutes());
+      let currentTime = hrs + ":" + mins;
+      console.log(currentTime);
+      if (chatText.length > 0) {
+        //ENCRYPT
+        var ciphertext = CryptoJS.AES.encrypt(
+          chatText,
+          "secret-key"
+        ).toString();
+        const db = getDatabase();
+        let chatID = time.getTime();
+        const database = ref(
+          db,
+          "ChatRoom/" + this.roomId + "/chats/" + chatID
+        );
+        set(database, {
+          name: this.user.name,
+          uid: this.user.uid,
+          msg: ciphertext,
+          time: currentTime,
+        }).then(() => {
+          this.scrollToBottom();
+        });
         this.clearChat();
       }
     },
@@ -155,7 +215,55 @@ export default {
         );
       }
     },
+    deleteChatroom() {
+      let deleteData = { roomId: this.roomId };
+      axios
+        .post("http://localhost:5000/api/deleteChatroom", deleteData)
+        .then(({ data }) => {
+          console.log(data);
+          this.$router.push("/chatroom");
+        })
+        .catch((resp) => {
+          console.log(resp);
+        });
+    },
+    exitChatroom() {
+      axios
+        .post("http://localhost:5000/api/removeUser", {
+          roomId: this.roomId,
+          uid: this.user.uid,
+        })
+        .then(({ data }) => {
+          console.log(data);
+          this.$router.push("/chatroom");
+        })
+        .catch((resp) => {
+          console.log(resp);
+        });
+    },
+    removeUser(user) {
+      axios
+        .post("http://localhost:5000/api/removeUser", {
+          roomId: this.roomId,
+          uid: user.uid,
+        })
+        .then(({ data }) => {
+          console.log(data);
+          alert(`${user.name} removed`);
+          location.reload();
+        })
+        .catch((resp) => {
+          console.log(resp);
+        });
+    },
   },
+  // computed: {
+  //   // mix the getters into computed with object spread operator
+  //   ...mapGetters([
+  //     'getUser',
+  //     // ...
+  //   ])
+  // },
 };
 </script>
 
